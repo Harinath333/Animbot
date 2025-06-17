@@ -123,7 +123,7 @@ const ChatBot = ({ selectedCharacter }) => {
     setIsTyping(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/chat", {
+      const response = await fetch("https://animbot-backend.onrender.com/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -138,7 +138,7 @@ const ChatBot = ({ selectedCharacter }) => {
       setIsTyping(false);
 
       const aiMessage = {
-        text: data.response,
+        text: data.reply || data.response, // depends on your backend key
         sender: "ai",
         timestamp: new Date().toISOString(),
       };
@@ -152,9 +152,6 @@ const ChatBot = ({ selectedCharacter }) => {
 
   return (
     <div className="relative flex flex-col w-full max-w-[600px] h-[70vh] bg-white/90 rounded-lg shadow-lg border border-gray-200 mx-auto overflow-hidden">
-      {/* Bot Info Card */}
-
-      {/* Messages Container */}
       <div className="flex-1 overflow-y-auto px-6 py-8 space-y-4">
         <AnimatePresence>
           {messages.map((message, index) => (
@@ -163,9 +160,7 @@ const ChatBot = ({ selectedCharacter }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className={`flex ${
-                message.sender === "user" ? "justify-end" : "justify-start"
-              }`}
+              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
                 className={`max-w-[75%] rounded-lg p-4 shadow border text-base ${
@@ -198,15 +193,14 @@ const ChatBot = ({ selectedCharacter }) => {
             </motion.div>
           ))}
         </AnimatePresence>
+
         {isTyping && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex justify-start"
           >
-            <div
-              className="max-w-[75%] rounded-lg p-4 bg-white text-gray-900 rounded-bl-none shadow border border-gray-200"
-            >
+            <div className="max-w-[75%] rounded-lg p-4 bg-white text-gray-900 rounded-bl-none shadow border border-gray-200">
               <div className="flex items-center gap-2 mb-1">
                 <img
                   src={characterInfo[selectedCharacter].avatar}
@@ -228,7 +222,6 @@ const ChatBot = ({ selectedCharacter }) => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
       <form onSubmit={handleSubmit} className="px-6 py-4 border-t border-gray-200 bg-white flex gap-4 items-center">
         <input
           type="text"
@@ -243,9 +236,7 @@ const ChatBot = ({ selectedCharacter }) => {
           type="submit"
           disabled={!input.trim()}
           className={`px-6 py-3 rounded-xl font-medium text-white transition-all duration-300 ${
-            input.trim()
-              ? "bg-blue-600 hover:bg-blue-700"
-              : "bg-gray-300 cursor-not-allowed"
+            input.trim() ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-300 cursor-not-allowed"
           }`}
         >
           Send
